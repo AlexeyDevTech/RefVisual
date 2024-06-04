@@ -15,8 +15,11 @@ namespace RefTestVisual
 
         private void grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (DataContext != null)
-                (DataContext as MainWindowViewModel).Rect = e.NewSize;
+            (DataContext as MainWindowViewModel).Resize((int)e.NewSize.Width, (int)e.NewSize.Height);
         }
     }
+
+
+
+    
 }
