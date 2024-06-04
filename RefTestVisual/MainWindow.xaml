@@ -1,0 +1,21 @@
+﻿<Window x:Class="RefTestVisual.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RefTestVisual"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="1300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="150"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+
+        </Grid>
+        <Grid x:Name="grid" Grid.Row="1" Margin="10" Background="AliceBlue" SizeChanged="grid_SizeChanged">
+            <Image  Source="{Binding Img}"  Width="{Binding ActualWidth, ElementName=grid}" Height="{Binding ActualHeight, ElementName=grid}" Stretch="Fill"/>
+        </Grid>
+    </Grid>
+</Window>
