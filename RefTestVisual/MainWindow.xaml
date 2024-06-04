@@ -15,7 +15,7 @@
 
         </Grid>
         <Grid x:Name="grid" Grid.Row="1" Margin="10" Background="AliceBlue" SizeChanged="grid_SizeChanged">
-            <Image  Source="{Binding Img}"  Width="{Binding ActualWidth, ElementName=grid}" Height="{Binding ActualHeight, ElementName=grid}" Stretch="Fill"/>
+            <Image  Source="{Binding Img}"  Width="{Binding ActualWidth, ElementName=grid}" Height="{Binding ActualHeight, ElementName=grid}"/>
         </Grid>
     </Grid>
 </Window>

@@ -15,23 +15,27 @@ namespace RefTestVisual
             set => SetProperty(ref _img, value);
         }
 
-        public async void Resize(int newWidth, int newHeight)
+        public void Resize(int newWidth, int newHeight)
         {
-            await Img.Resize(newWidth, newHeight);
+            Img.Resize(newWidth, newHeight);
+            //Img = BitmapFactory.New(newWidth, newHeight);
+            Img.Clear();
+            Img.DrawLine(0, 0, newWidth, newHeight, Color.FromRgb(255, 0, 0));
         }
-      
+
         public MainWindowViewModel()
         {
             Img = BitmapFactory.New(100, 100);
-            //Img.DrawLine(0, 0, 100, 100, Color.FromRgb(255, 0, 0));
+            Img.DrawLine(0, 0, 100, 100, Color.FromRgb(255, 0, 0));
 
         }
     }
 
     public static class BitmapExtensions
     {
-        public async static Task<WriteableBitmap> Resize(this WriteableBitmap source, int newWidth, int newHeight)
+        public static WriteableBitmap Resize(this WriteableBitmap source, int newWidth, int newHeight)
         {
+            var sw = Stopwatch.StartNew();
             // Создание нового WriteableBitmap с новыми размерами
             WriteableBitmap resizedBitmap = new WriteableBitmap(newWidth, newHeight, source.DpiX, source.DpiY, source.Format, null);
 
@@ -42,14 +46,11 @@ namespace RefTestVisual
             // Доступ к пиксельным данным исходного изображения
             int[] sourcePixels = new int[source.PixelWidth * source.PixelHeight];
             source.CopyPixels(sourcePixels, source.PixelWidth * 4, 0);
-            var sw = Stopwatch.StartNew();
-            var resizedPixels = await NearestNeighbor(source.PixelWidth, newWidth, newHeight, xRatio, yRatio, sourcePixels);
-            Debug.WriteLine(sw.ElapsedMilliseconds);
-
-
+           
+            var resizedPixels = NearestNeighbor(source.PixelWidth, newWidth, newHeight, xRatio, yRatio, sourcePixels);
             // Копирование данных пикселей в новый WriteableBitmap
             resizedBitmap.WritePixels(new Int32Rect(0, 0, newWidth, newHeight), resizedPixels, newWidth * 4, 0);
-
+            Debug.WriteLine(sw.ElapsedMilliseconds);
             return resizedBitmap;
         }
 
@@ -119,27 +120,25 @@ namespace RefTestVisual
                 return resizedPixels;
             });
         }
-        private static async Task<int[]> NearestNeighbor(int width, int newWidth, int newHeight, int xRatio, int yRatio, int[] sourcePixels)
+        private static int[] NearestNeighbor(int width, int newWidth, int newHeight, int xRatio, int yRatio, int[] sourcePixels)
         {
-            return await Task.Run(() =>
+            // Пиксельные данные нового изображения
+            int[] resizedPixels = new int[newWidth * newHeight];
+            // Основной цикл по пикселям нового изображения
+            for (int y = 0; y < newHeight; y++)
             {
-                // Пиксельные данные нового изображения
-                int[] resizedPixels = new int[newWidth * newHeight];
-                // Основной цикл по пикселям нового изображения
-                for (int y = 0; y < newHeight; y++)
+                int nearestY = (y * yRatio) * width;
+                for (int x = 0; x < newWidth; x++)
                 {
-                    int nearestY = (y * yRatio) * width;
-                    for (int x = 0; x < newWidth; x++)
-                    {
-                        // Определение координат ближайшего пикселя исходного изображения
-                        int nearestX = (x * xRatio);
+                    // Определение координат ближайшего пикселя исходного изображения
+                    int nearestX = (x * xRatio);
 
-                        // Извлечение значения пикселя и установка в новое изображение
-                        resizedPixels[x + y * newWidth] = sourcePixels[nearestX + nearestY];
-                    }
+                    // Извлечение значения пикселя и установка в новое изображение
+                    resizedPixels[x + y * newWidth] = sourcePixels[nearestX + nearestY];
                 }
-                return resizedPixels;
-            });
+            }
+            return resizedPixels;
+            
         }
     }
 }
